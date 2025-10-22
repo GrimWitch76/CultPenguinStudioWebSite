@@ -24,13 +24,16 @@ setInterval(() => {
   document.getElementById('visits').innerText = count.toString().padStart(6, '0');
 }, 1000);
 
-setInterval(() => {
-  const bomb = document.createElement('img');
-  bomb.src = 'https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExZmM0cGh2djJ4czdiZm9tdm52bWFibHZ6bnYwMXFkMjE4d3VjM3h2dSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/aCsykbXB9oKfDnaVKP/giphy.gif'; 
-  bomb.classList.add('bomb');
-  bomb.style.left = Math.random() * window.innerWidth + 'px';
-  bomb.style.top = '-100px';
-  document.body.appendChild(bomb);
+const dinoGifs = [
+  "https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExaDR0NnQxeTV1eWV4NHd1c2pzeWNidHliMWIxM3Z1aHN2NW56aXo2ZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/VymXgA7O3RMWI/giphy.gif"   // raptor
+];
 
-  setTimeout(() => bomb.remove(), 5000);
-}, 600);
+setInterval(() => {
+  const dino = document.createElement('img');
+  dino.src = dinoGifs[Math.floor(Math.random() * dinoGifs.length)];
+  dino.classList.add('dino');
+  dino.style.left = Math.random() * window.innerWidth + 'px';
+  dino.style.top = '-120px';
+  document.body.appendChild(dino);
+  setTimeout(() => dino.remove(), 7000);
+}, 1600);
