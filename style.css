@@ -143,3 +143,26 @@ img {
   50% { opacity: 1; transform: translateY(-10px) scale(1.2); }
   100% { opacity: 0; transform: translateY(-20px) scale(0.8); }
 }
+
+.bomb {
+  position: fixed;
+  width: 64px;
+  height: 64px;
+  pointer-events: none;
+  animation: fall 5s linear forwards;
+  z-index: 999;
+}
+
+@keyframes fall {
+  0% {
+    transform: translateY(-100px) rotate(0deg);
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(110vh) rotate(720deg);
+    opacity: 0;
+  }
+}
