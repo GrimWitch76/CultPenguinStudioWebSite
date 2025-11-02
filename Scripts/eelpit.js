@@ -2,7 +2,6 @@
 // ==============================
 // EEL PIT – cursed but readable
 // ==============================
-(() => {
   // ------------------------------
   // Utils
   // ------------------------------
@@ -20,6 +19,7 @@
   const btnEnter = document.getElementById('enter');
   const btnFeed = document.getElementById('feed');
   const btnQuiet = document.getElementById('quiet');
+  const btnQuit = document.getElementById('quit');
   const btnGbPost = document.getElementById('gb-post');
 
   // ------------------------------
@@ -351,8 +351,3 @@
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => (toastBox.style.opacity = '0'), ms);
   }
-
-  // Expose for debug (optional)
-  window.__eelpit = { snakes, crumbs, createSnake, createCrumb };
-})();
-````

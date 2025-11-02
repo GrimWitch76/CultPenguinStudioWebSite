@@ -15,7 +15,7 @@
     <!-- Styles -->
     <link rel="stylesheet" href="Style/eelpit.css" />
   </head>
-  
+
   <body class="crt">
     <!-- Gate Overlay -->
     <div
@@ -55,15 +55,19 @@
       <div class="warning" aria-live="polite">!! WATER LEVEL RISING !!</div>
 
       <p>
-        Deep below the office lies a tiled abyss where ideas go to wriggle. Some say the eels carry code reviews from one sprint to the next.
-        Others say they just want a hug. <strong>Either way, enter at your own peril.</strong>
+        Deep below the office, the tiled abyss hums with hunger.
+They say they only want a little snack, just one more breadcrumb, just one more idea.
+Feed them, and they’ll show you something wonderful.
+<strong>Don't disappoint the pit</strong>
       </p>
 
       <!-- Controls -->
       <div class="btn-row">
-        <button type="button" class="btn" id="enter">ENTER THE PIT</button>
+        <button type="button" class="btn" id="enter">ANGER THE PIT</button>
         <button type="button" class="btn" id="feed">FEED THE EELS</button>
         <button type="button" class="btn" id="quiet">TOGGLE QUIET HOURS</button>
+        <button type="button" class="btn" id="quit"><a href="index.html" title="Do not enter">LEAVE THE PIT</a></button>
+        
         <span class="tip">(Tip: click anywhere to make a <em>splash</em> 💦)</span>
       </div>
 
@@ -71,7 +75,7 @@
       <section class="tank" id="tank" aria-label="eel habitat"></section>
 
       <!-- Guestbook (nostalgia only; no persistence) -->
-      <h2 class="guestbook-title">Sign the <span class="txt-eel">Guestbook</span> (it doesn't save 💀)</h2>
+      <h2 class="guestbook-title">Give offering to the <span class="txt-eel">EELS</span> (it won't save you💀)</h2>
       <form class="guestbook" onsubmit="return false;">
         <div class="gb-row">
           <label for="gb-name">Name</label>
@@ -93,7 +97,7 @@
 
     <!-- Audio -->
     <audio id="ambience" loop preload="auto">
-      <source src="../audio/eelpit.mp3" type="audio/mpeg" />
+      <source src="audio/eels_song.mp3" type="audio/mpeg" />
     </audio>
 
     <!-- Floating fact label -->
