@@ -16,7 +16,6 @@ const tank = document.getElementById('tank');
 const ambience = document.getElementById('ambience');
 const fact = document.getElementById('fact');
 const gateBtn = document.getElementById('gate-enter');
-const btnEnter = document.getElementById('enter');
 const btnFeed = document.getElementById('feed');
 const btnQuiet = document.getElementById('quiet');
 const btnQuit = document.getElementById('quit');
@@ -583,7 +582,6 @@ function toast(msg, ms = 1600) {
     if (idx >= seq.length) {
       idx = 0;
       if (!pitOpen) startPit();
-      if (!extreme) btnEnter.click();
       toast('You feel the current accelerate…');
     }
   });
