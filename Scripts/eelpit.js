@@ -115,6 +115,10 @@ function advanceRitual() {
   if (ritualLevel === 6) toast('You feel many eyes upon you.');
   if (ritualLevel === 9) toast('The water hums in a forgotten tongue.');
   if (ritualLevel === 12) { toast('🜂 THE PIT AWAKENS 🜂'); triggerEelpocalypse(); }
+
+  if (eyeOfPit) {
+    eyeOfPit.style.opacity = Math.min(1, ritualLevel / 12);
+  }
 }
 
 
@@ -132,7 +136,7 @@ function triggerEelpocalypse() {
     document.body.style.backgroundColor = flashes % 2 ? '#000' : '#360013';
     flashes++;
   }, 300);
-  
+
 
 
   // random whispers
@@ -206,55 +210,55 @@ function tickSnakes(dt) {
   const W = tank.clientWidth;
   const H = tank.clientHeight;
 
-if (maelstrom){
-  const W = tank.clientWidth, H = tank.clientHeight;
-  const cx = W * 0.5, cy = H * 0.52; // slightly below center feels deeper
+  if (maelstrom) {
+    const W = tank.clientWidth, H = tank.clientHeight;
+    const cx = W * 0.5, cy = H * 0.52; // slightly below center feels deeper
 
-  snakes.forEach(s => {
-    // converge radius toward target so the ring tightens smoothly
-    s.orbitRadius += (ringRadiusTarget - s.orbitRadius) * Math.min(1, dt * 1.5);
+    snakes.forEach(s => {
+      // converge radius toward target so the ring tightens smoothly
+      s.orbitRadius += (ringRadiusTarget - s.orbitRadius) * Math.min(1, dt * 1.5);
 
-    // spin around the center
-    s.orbitAngle += s.orbitDir * s.orbitSpeed * dt;
+      // spin around the center
+      s.orbitAngle += s.orbitDir * s.orbitSpeed * dt;
 
-    // === proper arc spacing per segment ===
-    const segSpacingPx = 22;                                  // pixel distance between segments along the ring
-    const deltaA = segSpacingPx / Math.max(48, s.orbitRadius); // radians per segment (clamped so very small radii still separate)
-    const amp = prefersReduced ? 0 : Math.max(6, s.baseAmp);   // subtle ripple amplitude
+      // === proper arc spacing per segment ===
+      const segSpacingPx = 22;                                  // pixel distance between segments along the ring
+      const deltaA = segSpacingPx / Math.max(48, s.orbitRadius); // radians per segment (clamped so very small radii still separate)
+      const amp = prefersReduced ? 0 : Math.max(6, s.baseAmp);   // subtle ripple amplitude
 
-    for (let i = 0; i < s.segs.length; i++){
-      // place each segment i behind the head along the tangent (respect orbit direction)
-      const a = s.orbitAngle - s.orbitDir * i * deltaA;
+      for (let i = 0; i < s.segs.length; i++) {
+        // place each segment i behind the head along the tangent (respect orbit direction)
+        const a = s.orbitAngle - s.orbitDir * i * deltaA;
 
-      // gentle body ripple that pushes slightly in/out from the ring
-      const ripple = Math.sin((a + s.phase0) * 3 + i * 0.3) * (amp * 0.35);
+        // gentle body ripple that pushes slightly in/out from the ring
+        const ripple = Math.sin((a + s.phase0) * 3 + i * 0.3) * (amp * 0.35);
 
-      const r = s.orbitRadius + ripple;
-      const x = cx + Math.cos(a) * r;
-      const y = cy + Math.sin(a) * r;
+        const r = s.orbitRadius + ripple;
+        const x = cx + Math.cos(a) * r;
+        const y = cy + Math.sin(a) * r;
 
-      const seg = s.segs[i];
-      seg.style.left = (x - 20) + 'px';
-      seg.style.top  = (y - 9) + 'px';
+        const seg = s.segs[i];
+        seg.style.left = (x - 20) + 'px';
+        seg.style.top = (y - 9) + 'px';
 
-      // orient rectangle to tangent so it "flows" around the ring
-      // tangent angle is +90° for clockwise, -90° for counterclockwise
-      const tangentDeg = (a * 180 / Math.PI) + (s.orbitDir > 0 ? 90 : -90);
+        // orient rectangle to tangent so it "flows" around the ring
+        // tangent angle is +90° for clockwise, -90° for counterclockwise
+        const tangentDeg = (a * 180 / Math.PI) + (s.orbitDir > 0 ? 90 : -90);
 
-      // preserve the scale you set at creation, only add rotation
-      // (each seg had a scale() applied once; append rotate() here)
-      // Pull existing scale from inline style once and cache it
-      if (!seg._baseScale){
-        // parse "scale(N)" from the initial transform string, fallback to 1
-        const m = (seg.style.transform || '').match(/scale\(([^)]+)\)/);
-        seg._baseScale = m ? parseFloat(m[1]) : 1;
+        // preserve the scale you set at creation, only add rotation
+        // (each seg had a scale() applied once; append rotate() here)
+        // Pull existing scale from inline style once and cache it
+        if (!seg._baseScale) {
+          // parse "scale(N)" from the initial transform string, fallback to 1
+          const m = (seg.style.transform || '').match(/scale\(([^)]+)\)/);
+          seg._baseScale = m ? parseFloat(m[1]) : 1;
+        }
+        seg.style.transform = `scale(${seg._baseScale}) rotate(${tangentDeg}deg)`;
       }
-      seg.style.transform = `scale(${seg._baseScale}) rotate(${tangentDeg}deg)`;
-    }
-  });
+    });
 
-  return; // skip normal wander logic while maelstrom is active
-}
+    return; // skip normal wander logic while maelstrom is active
+  }
 
   snakes.forEach((snake) => {
     const target = nearestCrumbForSnake(snake);
@@ -350,7 +354,7 @@ function pupilMaxOffsetPx() {
   return extreme ? base * 1.4 : base;               // extra spicy in Extreme
 }
 
-function tickEyes(dt){
+function tickEyes(dt) {
   if (eyeNodes.length === 0) return;
   const maxOff = pupilMaxOffsetPx();
 
@@ -358,7 +362,7 @@ function tickEyes(dt){
     const eye = eyeNodes[i];
     const r = eye.getBoundingClientRect();
     const cx = r.left + r.width / 2;
-    const cy = r.top  + r.height / 2;
+    const cy = r.top + r.height / 2;
 
     let dx = cursorX - cx;
     let dy = cursorY - cy;
@@ -370,12 +374,12 @@ function tickEyes(dt){
     const scale = Math.min(1, maxOff / dist);
     const px = dx * scale;
     const py = dy * scale;
-    eye.style.setProperty('--px', px.toFixed(2)+'px');
-    eye.style.setProperty('--py', py.toFixed(2)+'px');
+    eye.style.setProperty('--px', px.toFixed(2) + 'px');
+    eye.style.setProperty('--py', py.toFixed(2) + 'px');
 
     // micro-tilt (max ±6deg, scales with ritual)
     const tiltMax = Math.min(6, 2 + ritualLevel * 0.4) * (extreme ? 1.2 : 1);
-    const angle = Math.atan2(dy, dx) * 180/Math.PI; // facing angle
+    const angle = Math.atan2(dy, dx) * 180 / Math.PI; // facing angle
     const targetRot = Math.max(-tiltMax, Math.min(tiltMax, angle * 0.06));
     const currentRot = parseFloat(eye.style.getPropertyValue('--rot')) || 0;
     const rot = currentRot + (targetRot - currentRot) * Math.min(1, dt * 8);
@@ -388,13 +392,14 @@ function tickEyes(dt){
 // Main loop
 // ------------------------------
 function frame(ts) {
-  
+
   const dt = Math.min(0.05, (ts - lastTs) / 1000);
   lastTs = ts;
   tickPerf(dt);
   tickSnakes(dt);
   tickCrumbs(dt);
   tickEyes(dt);
+  tickEyeOfPit(dt);
   animId = requestAnimationFrame(frame);
 }
 function ensureAnimLoop() {
@@ -405,12 +410,12 @@ function ensureAnimLoop() {
 }
 
 let fpsSmoothed = 60;
-function tickPerf(dt){
-  const inst = 1/Math.max(dt, 0.001);
-  fpsSmoothed = fpsSmoothed*0.9 + inst*0.1;
+function tickPerf(dt) {
+  const inst = 1 / Math.max(dt, 0.001);
+  fpsSmoothed = fpsSmoothed * 0.9 + inst * 0.1;
   if (fpsSmoothed < 30) {
     // lighten the load
-    eyeNodes.slice(0, Math.ceil(eyeNodes.length*0.15)).forEach(n => (n.remove(), eyeNodes.splice(eyeNodes.indexOf(n),1)));
+    eyeNodes.slice(0, Math.ceil(eyeNodes.length * 0.15)).forEach(n => (n.remove(), eyeNodes.splice(eyeNodes.indexOf(n), 1)));
   }
 }
 // in frame loop:
@@ -466,7 +471,7 @@ btnFeed.addEventListener('click', () => {
     setTimeout(() => createCrumb(R(10, tank.clientWidth - 20), R(-40, -8)), i * 40);
   toast('A rain of breadcrumbs descends...');
   advanceRitual();
-   syncEyes();
+  syncEyes();
 });
 
 btnQuiet.addEventListener('click', () => {
@@ -645,21 +650,21 @@ window.addEventListener('click', (e) => {
 
 // ---------- Eyes logic ----------
 let eyeNodes = [];
-function targetEyeCount(){
+function targetEyeCount() {
   // Starts at ritual 3. Scales with ritual & Extreme.
   if (ritualLevel < 3) return 0;
   const base = Math.min(60, Math.floor(ritualLevel * 2 + 4));
   return extreme ? Math.min(100, Math.floor(base * 1.5)) : base;
 }
 
-function randomEyePos(){
+function randomEyePos() {
   const pad = 24;
-  const vw = Math.max(pad, window.innerWidth - pad*2);
-  const vh = Math.max(pad, window.innerHeight - pad*2);
-  return { x: Math.random()*vw + pad, y: Math.random()*vh + pad };
+  const vw = Math.max(pad, window.innerWidth - pad * 2);
+  const vh = Math.max(pad, window.innerHeight - pad * 2);
+  return { x: Math.random() * vw + pad, y: Math.random() * vh + pad };
 }
 
-function createEye(){
+function createEye() {
   const eye = document.createElement('div');
   eye.className = 'eye';
   const ball = document.createElement('div'); ball.className = 'ball';
@@ -667,14 +672,14 @@ function createEye(){
   const lidB = document.createElement('div'); lidB.className = 'lid bottom';
   eye.appendChild(ball); eye.appendChild(lidT); eye.appendChild(lidB);
 
-  const {x,y} = randomEyePos();
+  const { x, y } = randomEyePos();
   const sz = (extreme ? R(28, 52) : R(22, 42));
   const rot = R(-6, 6);
   const blink = (extreme ? R(3.0, 5.2) : R(4.5, 7.5)) + 's';
   const delay = R(0, 6) + 's';
 
   eye.style.left = x + 'px';
-  eye.style.top  = y + 'px';
+  eye.style.top = y + 'px';
   eye.style.setProperty('--sz', sz + 'px');
   eye.style.setProperty('--rot', rot + 'deg');
   eye.style.setProperty('--blink', blink);
@@ -685,7 +690,7 @@ function createEye(){
   eyeNodes.push(eye);
 }
 
-function syncEyes(){
+function syncEyes() {
   const target = targetEyeCount();
   // add/remove to meet the target count
   while (eyeNodes.length < target) createEye();
@@ -698,7 +703,7 @@ function syncEyes(){
 window.addEventListener('resize', () => {
   // Nudge positions back on screen without full rebuild
   const pad = 16;
-  eyeNodes.forEach(n=>{
+  eyeNodes.forEach(n => {
     const rect = n.getBoundingClientRect();
     let x = rect.left, y = rect.top;
     x = Math.min(Math.max(pad, x), window.innerWidth - pad);
@@ -708,7 +713,7 @@ window.addEventListener('resize', () => {
 });
 
 // ---------- Audio routing ----------
-function updateRitualAudio(){
+function updateRitualAudio() {
   if (quiet) { ambience.pause(); chant.pause(); return; }
 
   try {
@@ -718,19 +723,19 @@ function updateRitualAudio(){
       ambience.pause();
       chant.currentTime = 0;
       chant.volume = 0.7;
-      chant.play().catch(()=>{});
+      chant.play().catch(() => { });
     } else {
       // Normal ambience
       if (!ambience.paused) return;
       chant.pause();
       ambience.currentTime = 0;
       ambience.volume = 0.5;
-      ambience.play().catch(()=>{});
+      ambience.play().catch(() => { });
     }
-  } catch(e){}
+  } catch (e) { }
 }
 
-function enterMaelstrom(){
+function enterMaelstrom() {
   if (maelstrom) return;
   maelstrom = true;
   document.body.classList.add('maelstrom');
@@ -745,19 +750,52 @@ function enterMaelstrom(){
   // Initialize orbital parameters per eel
   let i = 0, n = snakes.size;
   snakes.forEach(s => {
-    s.orbitAngle  = (i / n) * Math.PI * 2;                // spread around circle
+    s.orbitAngle = (i / n) * Math.PI * 2;                // spread around circle
     s.orbitRadius = ringRadiusTarget + R(-24, 24);        // slight jitter
-    s.orbitSpeed  = (prefersReduced ? 0.5 : 0.8) * R(0.85, 1.1) * (extreme ? 1.25 : 1.0);
-    s.orbitDir    = 1; // clockwise; set -1 to reverse
-    s.baseAmp     = Math.max(s.baseAmp, 10);              // give them some life
+    s.orbitSpeed = (prefersReduced ? 0.5 : 0.8) * R(0.85, 1.1) * (extreme ? 1.25 : 1.0);
+    s.orbitDir = 1; // clockwise; set -1 to reverse
+    s.baseAmp = Math.max(s.baseAmp, 10);              // give them some life
     s.exciteTimer = Math.max(s.exciteTimer, 1.5);
     i++;
   });
-
+  spawnEyeOfPit();
   // Faster swirl if extreme
   document.body.style.setProperty('--vortex-speed', extreme ? '9s' : '14s');
 
   toast('The eels form a circle…');
+}
+
+let eyeOfPit = null;
+
+function spawnEyeOfPit() {
+  if (eyeOfPit) return;
+  eyeOfPit = document.createElement('div');
+  eyeOfPit.id = 'eyeOfPit';
+  eyeOfPit.innerHTML = `
+    <div class="ball"></div>
+    <div class="lid top"></div>
+    <div class="lid bottom"></div>
+  `;
+  tank.appendChild(eyeOfPit);
+
+  // Random blink offset
+  const delay = R(0, 8);
+  eyeOfPit.querySelectorAll('.lid').forEach(lid => lid.style.animationDelay = delay + 's');
+}
+
+function tickEyeOfPit(dt) {
+  if (!eyeOfPit) return;
+
+  // Follow cursor subtly, like the smaller eyes
+  const rect = tank.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+
+  const dx = (cursorX - cx) * 0.02;
+  const dy = (cursorY - cy) * 0.02;
+
+  const pupil = eyeOfPit.querySelector('.ball');
+  pupil.style.transform = `translate(${dx}px, ${dy}px)`;
 }
 
 

@@ -580,46 +580,58 @@ body.ritual-ge-6.crt:before {
 body.ritual-ge-6 .eye { --op: 0.95; }
 body.ritual-ge-9 .eye .ball::after { box-shadow: 0 0 10px rgba(255,0,68,.7); }
 
-.eye { transform: translate(-50%, -50%) rotate(var(--rot, 0deg)); }
+/* ================================
+   The Eye of the Pit (maelstrom core)
+   ================================ */
+#eyeOfPit {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: var(--pit-size, 240px);
+  height: calc(var(--pit-size, 240px) * 0.6);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 10;
+  filter: drop-shadow(0 0 15px rgba(255,0,68,.7))
+          drop-shadow(0 0 35px rgba(255,0,68,.5));
+  transition: opacity 2s ease;
+}
 
-/* =========================
-   Maelstrom (ouroboros swirl)
-   ========================= */
-.vortex{
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  opacity:0;
-  mix-blend-mode: screen;
+body.maelstrom #eyeOfPit {
+  opacity: 1;
+}
+
+#eyeOfPit .ball {
+  position: absolute;
+  inset: 0;
+  border-radius: 50% / 40%;
   background:
-    radial-gradient(closest-side at 50% 50%,
-      rgba(126,241,255,.10) 0%,
-      rgba(57,255,20,.06) 40%,
-      rgba(255,0,230,.04) 60%,
-      rgba(0,0,0,0) 70%),
-    conic-gradient(from 0deg at 50% 50%,
-      rgba(126,241,255,.12),
-      rgba(255,0,230,.08),
-      rgba(57,255,20,.10),
-      rgba(126,241,255,.12));
-  filter: blur(0.8px);
-  transform: scale(1.02);
+    radial-gradient(circle at 55% 55%, rgba(255,255,255,.95), rgba(240,240,255,.8) 40%, rgba(200,220,255,.4) 70%),
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,.25), transparent 60%);
+  border: 4px solid rgba(126,241,255,.6);
 }
 
-body.maelstrom .vortex{
-  opacity: .85;
-  animation: vortex-spin var(--vortex-speed, 14s) linear infinite;
+#eyeOfPit .ball::after {
+  content: '';
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 25%; height: 25%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, #050a12 0 60%, rgba(255,0,68,.9) 61% 100%);
+  box-shadow: 0 0 30px rgba(255,0,68,.9);
 }
 
-@keyframes vortex-spin {
-  to { transform: scale(1.02) rotate(360deg); }
+@keyframes pitBlink {
+  0%, 94%, 100% { transform: scaleY(0); }
+  96% { transform: scaleY(1); }
+  98% { transform: scaleY(0); }
 }
 
-/* Subtle eel glow at max corruption */
-body.maelstrom .snake .seg.head::after{
-  box-shadow: 0 0 12px rgba(255,0,68,.85);
+body.maelstrom #eyeOfPit .ball::after {
+  animation: pitPupil 6s ease-in-out infinite;
 }
-
-@media (prefers-reduced-motion: reduce){
-  body.maelstrom .vortex{ animation: none; }
+@keyframes pitPupil {
+  0%,100% { transform: translate(-50%,-50%) scale(1); }
+  50% { transform: translate(-50%,-50%) scale(1.4); }
 }
