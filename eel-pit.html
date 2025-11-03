@@ -1,130 +1,127 @@
 <!-- html/eel-pit.html -->
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>The EEL PIT – do not enter</title>
 
-    <!-- Favicon: cursed but cute -->
-    <link
-      rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='50' font-size='48'%3E%F0%9F%90%8D%3C/text%3E%3C/svg%3E"
-    />
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The EEL PIT – do not enter</title>
 
-    <!-- Styles -->
-    <link rel="stylesheet" href="Style/eelpit.css" />
-  </head>
+  <!-- Favicon: cursed but cute -->
+  <link rel="icon"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='50' font-size='48'%3E%F0%9F%90%8D%3C/text%3E%3C/svg%3E" />
 
-  <body class="crt">
-    <!-- Gate Overlay -->
-    <div
-      id="gate"
-      class="gate"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="gate-title"
-      aria-describedby="gate-desc"
-    >
-      <div class="gate-inner">
-        <h1 id="gate-title">THE EEL PIT</h1>
-        <p id="gate-desc">
-          Management strongly advises against proceeding. Clicking will open the pit.
-        </p>
-        <button id="gate-enter" class="btn btn-lg">ENTER THE PIT</button>
-        <p class="gate-tip">(Audio may play. You can mute after entering.)</p>
-      </div>
+  <!-- Styles -->
+  <link rel="stylesheet" href="Style/eelpit.css" />
+</head>
+
+<body class="crt">
+  <!-- Gate Overlay -->
+  <div id="gate" class="gate" role="dialog" aria-modal="true" aria-labelledby="gate-title" aria-describedby="gate-desc">
+    <div class="gate-inner">
+      <h1 id="gate-title">THE EEL PIT</h1>
+      <p id="gate-desc">
+        Management strongly advises against proceeding. Clicking will open the pit.
+      </p>
+      <button id="gate-enter" class="btn btn-lg">ENTER THE PIT</button>
+      <p class="gate-tip">(Audio may play. You can mute after entering.)</p>
+    </div>
+  </div>
+
+  <!-- Eyes overlay (spawns at ritual ≥ 3) -->
+  <div class="eyes-layer" id="eyes" aria-hidden="true"></div>
+
+  <!-- Alternate ritual chant (plays at ritual ≥ 9) -->
+  <audio id="chant" loop preload="auto">
+    <source src="audio/eel_chant.mp3" type="audio/mpeg" />
+  </audio>
+
+  <!-- Ambient water shimmer -->
+  <div class="water" aria-hidden="true"></div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <h1>
+      WELCOME TO <span class="txt-hot">THE EEL PIT</span>
+    </h1>
+    <p class="sub">🚫 <em>Management strongly advises against clicking anything</em> 🚫</p>
+    <marquee scrollamount="10" behavior="alternate" class="ticky-tape">~*~ SLIPPERY WHEN WEIRD ~*~ BRING BREADCRUMBS ~*~
+      DO NOT FEED THE GUESTS ~*~</marquee>
+  </header>
+
+  <!-- Main -->
+  <main class="card">
+    <div class="warning" aria-live="polite">!! WATER LEVEL RISING !!</div>
+
+    <p>
+      Deep below the office, the tiled abyss hums with hunger.
+      They say they only want a little snack, just one more breadcrumb, just one more idea.
+      Feed them, and they’ll show you something wonderful.
+      <strong>Don't disappoint the pit</strong>
+    </p>
+
+    <!-- Controls -->
+    <div class="btn-row">
+      <button type="button" class="btn" id="feed">FEED THE EELS</button>
+      <button type="button" class="btn" id="quiet" aria-pressed="false">TOGGLE QUIET HOURS</button>
+      <a class="btn" href="index.html" id="quit" title="Do not enter">LEAVE THE PIT</a>
+      <span class="tip">(Tip: click anywhere to make a <em>splash</em> 💦)</span>
     </div>
 
-    <!-- Ambient water shimmer -->
-    <div class="water" aria-hidden="true"></div>
+    <!-- Eel habitat -->
+    <section class="tank" id="tank" aria-label="eel habitat">
+      <!-- Vortex overlay (visible in maelstrom) -->
+      <div class="vortex" id="vortex" aria-hidden="true"></div>
+    </section>
 
-    <!-- Header -->
-    <header class="site-header">
-      <h1>
-        WELCOME TO <span class="txt-hot">THE EEL PIT</span>
-      </h1>
-      <p class="sub">🚫 <em>Management strongly advises against clicking anything</em> 🚫</p>
-      <marquee scrollamount="10" behavior="alternate" class="ticky-tape"
-        >~*~ SLIPPERY WHEN WEIRD ~*~ BRING BREADCRUMBS ~*~ DO NOT FEED THE GUESTS ~*~</marquee
-      >
-    </header>
-
-    <!-- Main -->
-    <main class="card">
-      <div class="warning" aria-live="polite">!! WATER LEVEL RISING !!</div>
-
-      <p>
-        Deep below the office, the tiled abyss hums with hunger.
-They say they only want a little snack, just one more breadcrumb, just one more idea.
-Feed them, and they’ll show you something wonderful.
-<strong>Don't disappoint the pit</strong>
-      </p>
-
-      <!-- Controls -->
-      <div class="btn-row">
-        <button type="button" class="btn" id="enter">ANGER THE PIT</button>
-        <button type="button" class="btn" id="feed">FEED THE EELS</button>
-        <button type="button" class="btn" id="quiet">TOGGLE QUIET HOURS</button>
-        <button type="button" class="btn" id="quit"><a href="index.html" title="Do not enter">LEAVE THE PIT</a></button>
-        
-        <span class="tip">(Tip: click anywhere to make a <em>splash</em> 💦)</span>
+    <!-- Guestbook (nostalgia only; no persistence) -->
+    <h2 class="guestbook-title">Give offering to the <span class="txt-eel">EELS</span> (it won't save you💀)</h2>
+    <form class="guestbook" onsubmit="return false;">
+      <div class="gb-row">
+        <label for="gb-name">Name</label>
+        <input id="gb-name" class="gb-input" placeholder="e.g., Bubbles McSlither" />
       </div>
+      <div class="gb-row">
+        <label for="gb-offer">Offerings</label>
+        <input id="gb-offer" class="gb-input" placeholder="2 loaves, 1 sacrificial USB stick" />
+      </div>
+      <div class="gb-row">
+        <label for="gb-msg">Message</label>
+        <textarea id="gb-msg" rows="3" placeholder="I, for one, welcome our eel overlords."></textarea>
+      </div>
+      <div>
+        <button type="button" class="btn" id="gb-post">Post to Pit</button>
+      </div>
+    </form>
+  </main>
 
-      <!-- Eel habitat -->
-      <section class="tank" id="tank" aria-label="eel habitat"></section>
+  <!-- Audio -->
+  <audio id="ambience" loop preload="auto">
+    <source src="audio/eels_song.mp3" type="audio/mpeg" />
+  </audio>
 
-      <!-- Guestbook (nostalgia only; no persistence) -->
-      <h2 class="guestbook-title">Give offering to the <span class="txt-eel">EELS</span> (it won't save you💀)</h2>
-      <form class="guestbook" onsubmit="return false;">
-        <div class="gb-row">
-          <label for="gb-name">Name</label>
-          <input id="gb-name" class="gb-input" placeholder="e.g., Bubbles McSlither" />
-        </div>
-        <div class="gb-row">
-          <label for="gb-offer">Offerings</label>
-          <input id="gb-offer" class="gb-input" placeholder="2 loaves, 1 sacrificial USB stick" />
-        </div>
-        <div class="gb-row">
-          <label for="gb-msg">Message</label>
-          <textarea id="gb-msg" rows="3" placeholder="I, for one, welcome our eel overlords."></textarea>
-        </div>
-        <div>
-          <button type="button" class="btn" id="gb-post">Post to Pit</button>
-        </div>
-      </form>
-    </main>
+  <!-- Floating fact label -->
+  <div class="fact" id="fact">eel fact: can and will steal your tab focus</div>
 
-    <!-- Audio -->
-    <audio id="ambience" loop preload="auto">
-      <source src="audio/eels_song.mp3" type="audio/mpeg" />
-    </audio>
+  <!-- Legacy SVG eel template (kept for reference) -->
+  <template id="eel-template">
+    <svg class="eel" viewBox="0 0 512 128" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <linearGradient id="eGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#7ef1ff" />
+          <stop offset="55%" stop-color="#39ff14" />
+          <stop offset="100%" stop-color="#ff00e6" />
+        </linearGradient>
+      </defs>
+      <path d="M10 64 C 80 20, 140 100, 200 64 S 340 28, 420 64 S 500 100, 510 64" stroke="url(#eGrad)"
+        stroke-width="18" stroke-linecap="round" />
+      <circle cx="38" cy="56" r="6" fill="#fff" />
+      <circle cx="38" cy="56" r="3" fill="#000" />
+    </svg>
+  </template>
 
-    <!-- Floating fact label -->
-    <div class="fact" id="fact">eel fact: can and will steal your tab focus</div>
+  <!-- Scripts -->
+  <script src="Scripts/eelpit.js" defer></script>
+</body>
 
-    <!-- Legacy SVG eel template (kept for reference) -->
-    <template id="eel-template">
-      <svg class="eel" viewBox="0 0 512 128" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <defs>
-          <linearGradient id="eGrad" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stop-color="#7ef1ff" />
-            <stop offset="55%" stop-color="#39ff14" />
-            <stop offset="100%" stop-color="#ff00e6" />
-          </linearGradient>
-        </defs>
-        <path
-          d="M10 64 C 80 20, 140 100, 200 64 S 340 28, 420 64 S 500 100, 510 64"
-          stroke="url(#eGrad)"
-          stroke-width="18"
-          stroke-linecap="round"
-        />
-        <circle cx="38" cy="56" r="6" fill="#fff" />
-        <circle cx="38" cy="56" r="3" fill="#000" />
-      </svg>
-    </template>
-
-    <!-- Scripts -->
-    <script src="Scripts/eelpit.js" defer></script>
-  </body>
 </html>

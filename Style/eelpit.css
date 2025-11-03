@@ -222,24 +222,31 @@ font-family: inherit;
 }
 /* Floating fact */
 .fact {
-position: fixed;
-width: 260px;
-height: 32px;
-8
-left: 0;
-top: 0;
-transform: translate(40px, 40px);
-padding: 6px 10px;
-overflow: hidden;
-display: flex;
-align-items: center;
-justify-content: center;
-background: rgba(255, 255, 255, 0.05);
-border: 3px dashed var(--hot);
-pointer-events: none;
-text-shadow: 0 0 6px var(--hot);
-z-index: 50;
-transition: transform 0.08s linear;
+  position: fixed;
+  left: 0;
+  top: 0;
+  transform: translate(40px, 40px);
+  padding: 6px 10px;
+  max-width: 420px;              /* grows, but not infinite */
+  min-width: 220px;              /* default small size */
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 3px dashed var(--hot);
+  pointer-events: none;
+  text-shadow: 0 0 6px var(--hot);
+  z-index: 50;
+  transition:
+    transform 0.08s linear,
+    width 0.3s ease,
+    height 0.3s ease,
+    padding 0.3s ease,
+    background 0.3s ease;
+  box-sizing: border-box;
+  white-space: normal;           /* allow wrapping */
+  word-break: break-word;
 }
 /* Splash goo */
 .slime {
@@ -386,4 +393,233 @@ animation: none !important;
 .snake .seg {
 transition: none !important;
 }
+}
+
+/* ======================================
+   Bubble cursor trail (amp'd in Extreme)
+   ====================================== */
+.bubble {
+  position: fixed;
+  left: 0; top: 0;                 /* positioned via left/top in JS */
+  width: var(--sz, 12px);
+  height: var(--sz, 12px);
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0.85;
+  mix-blend-mode: screen;
+  background:
+    radial-gradient(circle at 30% 30%,
+      rgba(126,241,255,0.45),
+      rgba(57,255,20,0.18) 60%,
+      rgba(255,0,230,0.0) 70%);
+  border: 2px solid rgba(126,241,255,0.6);
+  filter: drop-shadow(0 2px 6px rgba(0, 200, 255, 0.35)) blur(0.2px);
+  transform: translate(-50%, -50%);   /* center on cursor */
+  animation:
+    bubble-rise var(--dur, 1.1s) ease-out forwards,
+    bubble-wobble var(--dur, 1.1s) ease-in-out;
+  will-change: transform, opacity;
+}
+
+@keyframes bubble-rise {
+  to {
+    transform: translate(-50%, calc(-50% - var(--rise, 120px))) scale(1.1);
+    opacity: 0;
+  }
+}
+@keyframes bubble-wobble {
+  0%   { offset-distance: 0%; }
+  50%  { offset-distance: 50%; }
+  100% { offset-distance: 100%; }
+}
+/* Path for wobble — browsers ignore if unsupported; harmless fallback */
+.bubble {
+  offset-path: path('M0,0 C var(--dx,12px),-10  calc(var(--dx,12px)*-1),-60  0,-100');
+}
+
+/* ===================================================
+   The Eel Ritual – escalating corruption (clean)
+   =================================================== */
+
+/* Continuous controls driven by --ritual */
+body {
+  /* default for safety */
+  --ritual: 0;
+}
+
+/* Stage 1+ : Uneasy Currents */
+body.ritual-ge-1 .water {
+  opacity: 0.35;
+  filter: hue-rotate(30deg) brightness(0.9);
+}
+
+/* Stage 3+ : The Pit Listens */
+body.ritual-ge-3 {
+  animation: rumble calc(0.5s - min(var(--ritual),12) * 0.02s) infinite;
+}
+@keyframes rumble {
+  0%,100% { transform: translate(0,0); }
+  25% { transform: translate(1px,-2px); }
+  75% { transform: translate(-2px,1px); }
+}
+
+body.ritual-ge-3 .fact::after {
+  content: " • it hears you";
+  color: var(--hot);
+  animation: blinkText 2s infinite;
+}
+@keyframes blinkText { 50% { opacity: 0.4; } }
+
+/* Stage 6+ : The Eels Remember */
+body.ritual-ge-6 .tank {
+  background: linear-gradient(180deg, #170012 0%, #001014 100%);
+  box-shadow: inset 0 0 calc(20px + var(--ritual) * 2px) #ff0044;
+}
+body.ritual-ge-6 .snake .seg.head::after {
+  background: #ff0044;
+  box-shadow: 0 0 6px #ff0044;
+}
+
+/* Stage 9+ : The Eelpocalypse (also scale continuously with --ritual) */
+body.ritual-ge-9 {
+  /* deepen corruption with level */
+  filter:
+    hue-rotate(calc(var(--ritual) * 12deg))
+    saturate(calc(1 + var(--ritual) * 0.08));
+  animation: apocalypsePulse
+    calc(1.4s - min(var(--ritual),12) * 0.06s) infinite;
+}
+@keyframes apocalypsePulse {
+  0%,100% { background-color: rgba(0,0,0,0.6); }
+  50%     { background-color: rgba(40,0,30,0.85); }
+}
+
+/* Optional: scale CRT scanline harshness a touch with corruption */
+body.ritual-ge-6.crt:before {
+  opacity: calc(0.12 + min(var(--ritual),12) * 0.01);
+}
+
+/* ======================================
+   The Eyes Watch – ritual ≥ 3
+   ====================================== */
+.eyes-layer{
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+}
+
+.eye{
+  position: absolute;
+  width: var(--sz, 32px);
+  height: calc(var(--sz, 32px) * 0.6);
+  left: 0; top: 0;
+  transform: translate(-50%, -50%) rotate(var(--rot, 0deg));
+  opacity: var(--op, 0.85);
+  filter: drop-shadow(0 1px 4px rgba(0,0,0,.6));
+}
+
+/* sclera */
+.eye .ball{
+  position: absolute;
+  inset: 0;
+  border-radius: 50% / 40%;
+  background:
+    radial-gradient(circle at 55% 55%, rgba(255,255,255,.95), rgba(240,240,255,.8) 40%, rgba(200,220,255,.4) 70%),
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,.25), transparent 60%);
+  border: 2px solid rgba(126,241,255,.5);
+}
+
+/* pupil (replace transform line) */
+.eye .ball::after{
+  content:'';
+  position:absolute;
+  left:50%; top:50%;
+  width: calc(var(--sz,32px) * 0.22);
+  height: calc(var(--sz,32px) * 0.22);
+  /* NEW: cursor-follow offsets via CSS vars */
+  transform: translate(
+    calc(-50% + var(--px, 0px)),
+    calc(-50% + var(--py, 0px))
+  );
+  border-radius: 50%;
+  background: radial-gradient(circle, #050a12 0 60%, rgba(57,255,20,.8) 61% 100%);
+  box-shadow: 0 0 6px rgba(57,255,20,.6);
+}
+
+/* lids */
+.eye .lid{
+  position:absolute;
+  left:-6%;
+  width:112%;
+  height:55%;
+  background: linear-gradient(180deg, rgba(2,20,30,.95), rgba(0,10,16,.98));
+  filter: drop-shadow(0 0 8px rgba(255,0,230,.25));
+  border-radius: 0 0 50% 50% / 0 0 90% 90%;
+  transform-origin: top center;
+  animation: blink var(--blink, 5s) infinite;
+  will-change: transform, opacity;
+}
+.eye .lid.top{
+  top:-2%;
+}
+.eye .lid.bottom{
+  bottom:-2%;
+  transform-origin: bottom center;
+  border-radius: 50% 50% 0 0 / 90% 90% 0 0;
+}
+
+/* blink timing tweaked via delay per-eye in JS */
+@keyframes blink{
+  0%, 92%, 100% { transform: scaleY(0); }
+  94% { transform: scaleY(1); }
+  96% { transform: scaleY(0); }
+}
+
+/* Make it creepier as ritual climbs */
+body.ritual-ge-6 .eye { --op: 0.95; }
+body.ritual-ge-9 .eye .ball::after { box-shadow: 0 0 10px rgba(255,0,68,.7); }
+
+.eye { transform: translate(-50%, -50%) rotate(var(--rot, 0deg)); }
+
+/* =========================
+   Maelstrom (ouroboros swirl)
+   ========================= */
+.vortex{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:0;
+  mix-blend-mode: screen;
+  background:
+    radial-gradient(closest-side at 50% 50%,
+      rgba(126,241,255,.10) 0%,
+      rgba(57,255,20,.06) 40%,
+      rgba(255,0,230,.04) 60%,
+      rgba(0,0,0,0) 70%),
+    conic-gradient(from 0deg at 50% 50%,
+      rgba(126,241,255,.12),
+      rgba(255,0,230,.08),
+      rgba(57,255,20,.10),
+      rgba(126,241,255,.12));
+  filter: blur(0.8px);
+  transform: scale(1.02);
+}
+
+body.maelstrom .vortex{
+  opacity: .85;
+  animation: vortex-spin var(--vortex-speed, 14s) linear infinite;
+}
+
+@keyframes vortex-spin {
+  to { transform: scale(1.02) rotate(360deg); }
+}
+
+/* Subtle eel glow at max corruption */
+body.maelstrom .snake .seg.head::after{
+  box-shadow: 0 0 12px rgba(255,0,68,.85);
+}
+
+@media (prefers-reduced-motion: reduce){
+  body.maelstrom .vortex{ animation: none; }
 }
