@@ -1,0 +1,131 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Basilica of the Abyssal Coil — A Devotional</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=EB+Garamond:ital,wght@0,400;0,500;0,700;1,500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="Style/churchOfTheEel.css">
+</head>
+
+<body>
+    <div class="vault">
+        <aside class="aisle" id="left">
+            <h3>Votives</h3>
+            <div class="candles" id="candles"></div>
+            <p>Light a flame for guidance. Each candle carries a wish to the dark water.</p>
+        </aside>
+
+
+        <section class="scripture">
+            <div class="vellum">
+                <div class="rubric">Liber Convolutionis — Book of the Coil</div>
+                <div class="title">Canticle I: The Descent</div>
+                <div class="ornament"></div>
+                <p class="dropcap" id="verses">By tile and tunnel, by pipe and grate, we descended into the office
+                    beneath the office, where the water remembers the old names.</p>
+                <div class="ornament"></div>
+                <div class="call">
+                    <div class="rubric">Celebrant</div>
+                    <div class="response" id="call">Who coils the hour when deadlines fray?</div>
+                    <div class="rubric">Congregation</div>
+                    <div class="response" id="resp">The Great Eel encircles — and we are held.</div>
+                </div>
+                <div class="liturgy">
+                    <button id="btn-next-verse">Next Verse</button>
+                    <button id="btn-litany">Call & Response</button>
+                    <button id="btn-incense">Raise Incense</button>
+                </div>
+            </div>
+            <div class="smoke" id="smoke"></div>
+        </section>
+
+
+        <aside class="aisle" id="right">
+            <h3>Scripture</h3>
+            <ol id="index">
+                <li>Canticle I — The Descent</li>
+                <li>Canticle II — The Hush of Pipes</li>
+                <li>Canticle III — The Covenant of Pellets</li>
+                <li>Canticle IV — On Deadlines and Tides</li>
+                <li>Lesser Litany — For Builds That Fail</li>
+                <li>Major Litany — When The Water Hums</li>
+            </ol>
+            <p>Select a canticle with <em>Next Verse</em>. The oculus will answer in color.</p>
+        </aside>
+
+
+        <!-- Full-width bottom confessional -->
+        <section class="confessional" id="confessional">
+            <div class="conf-wrap">
+                <h3>Confessional</h3>
+                <form id="eel-confessional" novalidate>
+                    <div class="grid">
+                        <label class="rubric" for="confessor">Pilgrim Name (optional)</label>
+                        <input id="confessor" name="name" type="text" placeholder="Anonymous">
+
+
+                        <label class="rubric" for="confession">Confession to the Great Eel</label>
+                        <textarea id="confession" name="message" rows="6" required
+                            placeholder="Speak plainly. The Coil forgives what the tide can carry."></textarea>
+                    </div>
+                    <div class="actions">
+                        <button type="submit" id="conf-submit">Offer Confession</button>
+                        <small id="conf-status" aria-live="polite"></small>
+                    </div>
+                </form>
+            </div>
+            <div class="incense-edge" aria-hidden="true"></div>
+        </section>
+<div class="candles-field" id="candles-field" aria-hidden="false"></div>
+
+
+
+
+
+
+<!-- Audio (will be controlled via JS) -->
+<audio id="aud-hymn" src="audio/hymn.mp3" preload="auto" loop></audio>
+<audio id="aud-awakened" src="audio/awakened.mp3" preload="auto" loop></audio>
+        <footer>© Cult Penguin Studio — Offered in reverent jest to the Great Eel. Take what is sacred and ship
+            responsibly.</footer>
+    </div>
+
+    <!-- Binding Altar (hidden until all 8 candles are lit) -->
+<section id="binding" class="binding-scene" aria-hidden="true">
+  <div class="ocean"></div>
+  <div class="eel-silhouette" aria-hidden="true"></div>
+
+  <div class="parchment">
+    <div class="parch-candles" id="bind-candles"></div>
+
+    <div class="binding-text">
+      <div class="rubric">Words of Binding</div>
+      <div id="bind-line">
+        <span id="bind-typed"></span><span id="bind-rest"></span>
+      </div>
+      <div class="bind-tip">Type the line exactly. Backspace to correct.</div>
+    </div>
+  </div>
+
+  <div id="ink" class="ink" aria-hidden="true"></div>
+
+<div id="ending" class="ending" aria-hidden="true">
+  <div class="ending-line" id="ending-line"></div>
+  <div class="ending-actions">
+    <button id="btn-return">Return to the Basilica</button>
+  </div>
+</div>
+
+</section>
+  <div id="hook-layer" class="hook-layer" aria-hidden="true"></div>
+  <div class="bubbles" id="bubbles" aria-hidden="true"></div>
+    <!-- Scattered ritual candles overlay -->
+    <script src="Scripts/churchOfTheEel.js"></script>
+</body>
+
+</html>

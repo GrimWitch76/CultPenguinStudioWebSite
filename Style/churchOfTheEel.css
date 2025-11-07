@@ -1,0 +1,498 @@
+:root{
+--ink:#0b0e12; --paper:#f3efe7; --parch:#e8e1cf; --gilt:#d2b87e; --wine:#7e2e3a; --violet:#6048b6; --teal:#2c7c78; --shadow:#131622;
+--line:#2b2f3d; --smoke:rgba(255,255,255,.06);
+}
+html,body{height:100%;}
+body{margin:0; background: radial-gradient(1600px 900px at 50% 20%, #1b1f2c 0%, #0c0f18 55%, #05070c 100%); color:#e9e6f8;
+font-family: "Cinzel", ui-serif, Georgia, "Times New Roman", serif;}
+*{box-sizing:border-box}
+
+
+/* Layout */
+.vault{display:grid; grid-template-columns:minmax(220px, 1fr) minmax(720px, 900px) minmax(220px, 1fr); gap:24px; min-height:100dvh; padding:24px;}
+header{grid-column:1/-1; display:flex; align-items:center; justify-content:space-between; padding:10px 16px; border:1px solid var(--line);
+background:linear-gradient(180deg, rgba(18,20,32,.75), rgba(10,12,20,.35)); border-radius:14px; position:sticky; top:12px; z-index:10;}
+.brand{letter-spacing:.12em; text-transform:uppercase; font-weight:700}
+.controls{display:flex; gap:10px; flex-wrap:wrap}
+button{appearance:none; border:1px solid var(--line); background:#0e1220; color:#e8e8ee; padding:8px 12px; border-radius:10px; cursor:pointer; box-shadow: inset 0 0 0 1px rgba(255,255,255,.02); transition:.2s transform,.2s box-shadow}
+button:hover{transform:translateY(-1px); box-shadow:0 6px 18px rgba(0,0,0,.25)}
+
+
+/* Aisles */
+.aisle{border:1px solid var(--line); border-radius:16px; padding:16px; background:linear-gradient(180deg, rgba(18,20,32,.55), rgba(12,14,24,.25)); position:relative; overflow:hidden}
+.aisle h3{margin:0 0 10px 0; letter-spacing:.08em; text-transform:uppercase; color:#e9dfc7}
+.aisle p{opacity:.8; margin-top:12px; font-family:"EB Garamond", Garamond, Georgia, serif}
+
+
+.candles{display:grid; grid-template-columns:repeat(4,1fr); gap:18px;}
+.candle{height:120px; position:relative; display:flex; align-items:flex-end; justify-content:center}
+.wax{width:16px; height:90px; background:linear-gradient(#f2f2f6,#cac8dd); border-radius:6px; box-shadow: inset 0 -10px 16px rgba(0,0,0,.25)}
+.flame{position:absolute; top:6px; width:10px; height:18px; background:radial-gradient(circle at 50% 35%, #ffe8a3, #ffc864 55%, rgba(255,120,48,.0) 70%);
+  border-radius:50% 50% 60% 60%; filter: drop-shadow(0 0 10px #ffc864); animation:flicker 1.8s infinite ease-in-out}
+@keyframes flicker{0%{transform:translateX(0) scale(1)} 40%{transform:translateX(-1px) scale(1.06)} 60%{transform:translateX(1px) scale(0.96)} 100%{transform:translateX(0) scale(1)}}
+
+/* Make candles interactive and start unlit */
+.candle { cursor: pointer; }
+.candle .flame {
+  opacity: 0;
+  transform: translateY(4px) scale(0.9);
+  transition: opacity .28s ease, transform .28s ease, filter .28s ease;
+}
+.candle.lit .flame {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: drop-shadow(0 0 12px #ffc864);
+}
+.candle.lit .wax {
+  box-shadow: inset 0 -10px 16px rgba(0,0,0,.25), 0 0 10px rgba(255,200,100,.15);
+}
+
+/* ==== Scattered ritual candles (overlay) ==== */
+.candles-field{
+  grid-column: 1 / -1;          /* span full page grid */
+  position: absolute;
+  min-height: 0;                 /* won’t push layout */
+  pointer-events: none;          /* children re-enable */
+  height: 100%;
+  width: 100%;
+  ;
+}
+.candles-field .candle{
+  position: absolute;
+  pointer-events: auto;
+  cursor: pointer;
+  height: 120px; width: 24px;    /* narrower stalk for field candles */
+  display: flex; align-items: flex-end; justify-content: center;
+  transform: translate(-50%, -50%); /* position by center using --cx/--cy */
+  left: var(--cx); top: var(--cy);
+}
+.candles-field .wax{
+  width: 16px; height: 90px;
+  background: linear-gradient(#f2f2f6,#cac8dd);
+  border-radius: 6px;
+  box-shadow: inset 0 -10px 16px rgba(0,0,0,.25);
+}
+.candles-field .flame{
+  position: absolute; top: -16px;
+  width: 10px; height: 18px;
+  background: radial-gradient(circle at 50% 35%, #ffe8a3, #ffc864 55%, rgba(255,120,48,0) 70%);
+  border-radius: 50% 50% 60% 60%;
+  filter: drop-shadow(0 0 10px #ffc864);
+  opacity: 0; transform: translateY(4px) scale(0.9);
+  transition: opacity .28s ease, transform .28s ease, filter .28s ease;
+}
+.candles-field .candle.lit .flame{
+  opacity: 1; transform: translateY(0) scale(1);
+}
+/* subtle cue when all lit later (we’ll use .bound soon) */
+.candles-field.bound .candle.lit .flame{
+  filter: drop-shadow(0 0 12px #9fe870);
+}
+
+/* ==== Drifting “mind-popups” ==== */
+.mind-popup{
+  position: fixed;
+  max-width: 28ch;
+  padding: 10px 12px;
+  background: rgba(248,242,227,.78);
+  color: #201a14;
+  border: 1px solid #bda67b; border-radius: 10px;
+  font-family: "EB Garamond", Garamond, Georgia, serif;
+  pointer-events: none;
+  opacity: 0; transform: translateY(6px);
+  animation: popup-fade 4.2s ease forwards;
+  z-index: 50;
+}
+@keyframes popup-fade{
+  0%   { opacity: 0; transform: translateY(6px); }
+  8%   { opacity: 1; transform: translateY(0); }
+  85%  { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-8px); }
+}
+
+.mind-popup {
+  animation: popup-fade 4.2s ease forwards, drift 4.2s ease-in-out;
+}
+
+@keyframes drift {
+  0%   { transform: translateY(6px) scale(1); }
+  50%  { transform: translateY(-4px) scale(1.02); }
+  100% { transform: translateY(6px) scale(1); }
+}
+
+/* responsive nudge so candles don’t hide on mobile */
+@media (max-width: 980px){
+  .candles-field .candle{ left: calc(var(--cx)); top: calc(var(--cy)); }
+}
+
+/* Scripture panel */
+.scripture{border:1px solid var(--line); border-radius:18px; overflow:hidden; position:relative;}
+.vellum{background:radial-gradient(800px 600px at 50% 40%, rgba(233,227,206,.85), rgba(220,212,190,.75) 55%, rgba(210,200,176,.65) 100%);
+color:#231c15; font-family: "EB Garamond", Garamond, Georgia, serif; padding:28px 28px 36px 28px; min-height:62vh}
+.rubric{color:#7a2430; letter-spacing:.08em; text-transform:uppercase; font-weight:700; font-size:.9rem}
+.title{font-size:2rem; margin:6px 0 14px 0; letter-spacing:.03em}
+.dropcap::first-letter{float:left; font-size:4.2rem; line-height:.8; padding:.18rem .6rem .3rem .2rem; margin-right:.1rem;
+color:#3a2b1a; background:linear-gradient(180deg, #e9dfc7, #d8caaa); border:2px solid #b9a273; border-radius:8px; box-shadow:0 2px 0 #bda67b, inset 0 0 0 2px #eadfcb}
+.ornament{height:18px; margin:14px 0; background: repeating-linear-gradient(90deg, #bda67b 0 22px, transparent 22px 28px),
+linear-gradient(90deg, #e0d6bf, #c9b891); -webkit-mask: radial-gradient(6px 6px at 6px 50%, black 98%, transparent 100%) left, radial-gradient(6px 6px at calc(100% - 6px) 50%, black 98%, transparent 100%) right; -webkit-mask-composite: xor; mask-composite: exclude}
+
+
+/* Oculus */
+.oculus{position:absolute; inset:auto 24px 24px auto; width:220px; height:220px; border-radius:50%; border:4px solid rgba(228,216,188,.9);
+box-shadow: inset 0 0 20px rgba(0,0,0,.25), 0 10px 40px rgba(0,0,0,.25); overflow:hidden}
+.glass{width:100%; height:100%; display:grid; grid-template-columns:repeat(6,1fr); grid-template-rows:repeat(6,1fr); gap:2px; padding:6px; background:#1a1c2a}
+.pane{background:linear-gradient(180deg, rgba(130,180,255,.55), rgba(70,110,220,.65)); filter: saturate(1.2) brightness(1.05)}
+.pane.teal{background:linear-gradient(180deg, rgba(86,210,195,.55), rgba(40,130,120,.7))}
+.pane.violet{background:linear-gradient(180deg, rgba(180,120,255,.55), rgba(112,70,200,.75))}
+.eel-path{position:absolute; inset:0}
+.eel-path svg{width:100%; height:100%; mix-blend-mode:screen; opacity:.9; filter: drop-shadow(0 0 6px rgba(150,120,255,.35))}
+
+/* Confessional (center bottom band) */
+.confessional {
+grid-column: 2 / 3; /* center column of the three-column grid */
+position: relative;
+overflow: hidden;
+margin-top: -6px;
+border: 1px solid var(--line);
+border-radius: 18px;
+background: linear-gradient(180deg, rgba(18,20,32,.65), rgba(10,12,20,.35));
+justify-self: center;
+width: 100%;
+}
+.conf-wrap {
+display: grid;
+gap: 12px;
+padding: 18px 18px 20px 18px;
+}
+.confessional h3 {
+margin: 0;
+letter-spacing: .08em;
+text-transform: uppercase;
+color: #e9dfc7;
+}
+.confessional .grid {
+display: grid;
+gap: 10px;
+}
+.confessional input[type="text"], .confessional textarea {
+width: 100%;
+padding: 10px 12px;
+border: 1px solid var(--line);
+border-radius: 10px;
+background: rgba(248,242,227,.6);
+color: #201a14;
+font-family: "EB Garamond", Garamond, Georgia, serif;
+}
+.confessional .actions {
+display: flex;
+gap: 12px;
+align-items: center;
+}
+.confessional .hp {
+position: absolute;
+left: -10000px;
+}
+.incense-edge {
+position: absolute;
+left: 0;
+right: 0;
+bottom: -40px;
+height: 160px;
+background: radial-gradient(900px 200px at 50% 0%, rgba(255,255,255,.05), transparent 65%);
+pointer-events: none;
+}
+
+
+/* Responsive */
+@media (max-width: 980px) {
+.vault { grid-template-columns: 1fr; }
+.oculus { position: static; margin: 18px auto 0 auto; display: block; }
+.confessional { grid-column: 1 / -1; }
+}
+
+/* Smoke */
+.smoke{position:absolute; inset:0; pointer-events:none; background:radial-gradient(1200px 800px at var(--sx,50%) 90%, var(--smoke), transparent 60%);
+animation: waft 8s infinite ease-in-out; opacity:.75}
+@keyframes waft{0%{transform:translateY(6px)} 50%{transform:translateY(-6px)} 100%{transform:translateY(6px)}}
+
+
+/* Liturgy */
+.liturgy{margin-top:12px; display:flex; flex-wrap:wrap; gap:10px}
+.call{display:grid; gap:10px; margin-top:10px}
+.response{border:1px solid #bda67b; padding:10px 12px; border-radius:10px; background:rgba(248,242,227,.6); color:#201a14}
+
+
+/* Footer */
+footer{grid-column:1/-1; margin-top:8px; color:#aab; text-align:center; padding:14px}
+
+
+a{color:#cdbaf8}
+
+/* ==== Binding Altar Scene ==== */
+.binding-scene{
+  grid-column: 1 / -1;
+  position: fixed; inset: 0;
+  display: none;
+  z-index: 80;
+  overflow: hidden;
+}
+.binding-scene.active{ display:block; }
+
+.binding-scene .ocean{
+  position:absolute; inset:0;
+  background:
+    radial-gradient(1200px 800px at 50% 90%, #080f26, transparent 60%),
+    radial-gradient(1400px 900px at 50% 20%, #07090f, #04060c 60%, #020409 100%);
+  animation: ocean-breathe 8s ease-in-out infinite;
+}
+@keyframes ocean-breathe{
+  0%,100%{ filter: none; }
+  50%{ filter: brightness(1.06) saturate(0.96); }
+}
+
+/* vast eel hint */
+.binding-scene .eel-silhouette{
+  position:absolute;
+  left:50%; top:50%;
+  width:300%; height:300%;   /* scale relative to viewport */
+  transform: translate(-50%,-50%) rotate(-12deg);
+  background: url("../eel.png") center/contain no-repeat;
+  opacity: 0.15;                /* tweak until it feels right */
+  filter: blur(8px) contrast(115%) brightness(0.9);
+  pointer-events:none;
+  z-index:1;
+  transition: opacity 3s ease, transform 6s ease;
+}
+.binding-scene .eel-silhouette.surge{
+  animation: eel-heave 1.6s ease-out forwards;
+}
+
+.binding-scene .eel-silhouette.idle{
+  animation: eel-drift 28s ease-in-out infinite alternate;
+}
+@keyframes eel-drift{
+  0%   { transform: translate(-50%,-50%) rotate(-12deg) scale(1); }
+  50%  { transform: translate(-50%,-51%) rotate(-12.2deg) scale(1.015); }
+  100% { transform: translate(-50%,-50%) rotate(-11.8deg) scale(1.03); }
+}
+
+@keyframes eel-heave{
+  0%   { transform: translate(-50%,-50%) rotate(-12deg) scale(1); opacity:.15; filter: blur(8px) contrast(115%); }
+  35%  { transform: translate(-50%,-50%) rotate(-11.5deg) scale(1.04); opacity:.22; filter: blur(6px) contrast(120%); }
+  100% { transform: translate(-50%,-50%) rotate(-12deg) scale(1.02); opacity:.18; filter: blur(7px) contrast(117%); }
+}
+/* parchment */
+.parchment{
+  position:absolute; left:50%; top:50%;
+  transform: translate(-50%,-50%);
+  width:min(820px, 90vw); padding:28px 24px;
+  background: linear-gradient(180deg, #eee5cf, #e0d3b5);
+  border:2px solid #bda67b; border-radius:12px;
+  box-shadow: 0 30px 80px rgba(0,0,0,.45), inset 0 0 0 2px rgba(255,255,255,.5);
+  color:#231c15; font-family:"EB Garamond", Garamond, Georgia, serif;
+}
+
+/* parchment candles row */
+.parch-candles{
+  display:grid; grid-template-columns: repeat(8, 1fr); gap:12px;
+  margin-bottom:16px; justify-items:center; align-items:end;
+}
+.parch-candle{
+  position:relative; height:46px; width:12px;
+  display:flex; align-items:flex-end; justify-content:center;
+}
+.parch-candle .wax{
+  width:12px; height:38px; border-radius:5px;
+  background: linear-gradient(#f6f3e6, #d3c8a9);
+  box-shadow: inset 0 -6px 10px rgba(0,0,0,.2);
+}
+.parch-candle .flame{
+  position:absolute; top:-12px; width:8px; height:12px; opacity:0;
+  background: radial-gradient(circle at 50% 35%, #ffe8a3, #ffc864 55%, rgba(255,120,48,0) 70%);
+  border-radius:50% 50% 60% 60%;
+  filter: drop-shadow(0 0 8px #ffc864);
+  transition: opacity .25s ease, transform .25s ease;
+  transform: translateY(3px) scale(.9);
+}
+.parch-candle.lit .flame{ opacity:1; transform: translateY(0) scale(1); }
+
+/* binding text */
+.binding-text .rubric{
+  color:#7a2430; letter-spacing:.08em; text-transform:uppercase; font-weight:700; font-size:.95rem;
+}
+#bind-line{
+  margin-top:6px; font-size:1.35rem; line-height:1.5; min-height:2.4em;
+  border:1px dashed rgba(0,0,0,.1); padding:10px; border-radius:8px;
+  background: rgba(255,255,255,.6);
+}
+#bind-typed{ color:#231c15; }
+#bind-rest { color:rgba(0,0,0,.45); }
+.bind-tip{ opacity:.75; margin-top:8px; font-size:.95rem }
+
+/* hooks layer + hook visuals */
+.hook-layer{ position:absolute; inset:0; pointer-events:none; }
+.hook{
+  position:absolute; left:50%; top:50%;
+  width:0; height:2px; background: linear-gradient(90deg, #bda67b, #f0e6c2);
+  transform-origin: left center; opacity:.95;
+  filter: drop-shadow(0 0 6px rgba(210,190,120,.45));
+  animation: hook-fire .55s ease-out forwards;
+}
+.hook::after{
+  content:\"\"; position:absolute; right:-6px; top:50%; width:10px; height:10px;
+  border-right:2px solid #bda67b; border-top:2px solid #bda67b;
+  transform: translateY(-50%) rotate(45deg);
+}
+@keyframes hook-fire{
+  from{ width:0; }
+  to  { width:46vmin; }
+}
+
+/* darken background of original layout when binding is active */
+body.binding .vault{ filter: brightness(.4); pointer-events:none; user-select:none; }
+
+/* ==== Ocean shimmer (CSS-only) ==== */
+.binding-scene .ocean::before{
+  content:"";
+  position:absolute; inset:0;
+  /* two subtle ripple bands that drift horizontally */
+  background:
+    repeating-linear-gradient(115deg, rgba(160,190,220,.06) 0 2px, rgba(0,0,0,0) 2px 10px),
+    repeating-linear-gradient(65deg, rgba(120,155,190,.05) 0 2px, rgba(0,0,0,0) 2px 12px);
+  mix-blend-mode: screen;
+  animation: ocean-shimmer 120s linear infinite;
+  pointer-events:none;
+}
+@keyframes ocean-shimmer{
+  0%   { background-position: 0 0, 0 0;   }
+  100% { background-position: 1600px 0, -1600px 0; }
+}
+
+/* faint horizon mist */
+.binding-scene .ocean::after{
+  content:"";
+  position:absolute; left:0; right:0; top:32%;
+  height:28%;
+  background: radial-gradient(70% 200% at 50% 0%, rgba(160,180,210,.08), transparent 65%);
+  filter: blur(2px);
+  pointer-events:none;
+}
+
+/* ==== Background bubbles ==== */
+.bubbles{ position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+.bubble{
+  position:absolute;
+  left: var(--x, 50%); bottom: -40px;
+  width: 20px; height: 40px;
+  border-radius:50%;
+  background: radial-gradient(circle at 35% 35%, rgba(255,255,255,.9), rgba(200,220,240,.6) 55%, rgba(255,255,255,0) 60%);
+  opacity:.28;                       /* was .18 */
+  mix-blend-mode: screen;            /* helps over dark water */
+  animation: bubble-rise var(--dur, 18s) ease-in var(--delay, 0s) forwards;
+  will-change: transform, opacity;
+  z-index: 99999; 
+}
+@keyframes bubble-rise{
+  0%   { transform: translateY(0) translateX(0) scale(1); opacity:.0; }
+  6%   { opacity:.18; }
+  50%  { transform: translateY(-50vh) translateX(var(--drift, 14px)) scale(1.05); }
+  100% { transform: translateY(-105vh) translateX(calc(var(--drift, 14px) * 2)) scale(1.1); opacity:0; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .bubble{
+    /* no animation, but keep them inside the viewport and visible */
+    bottom: 6vh;                 /* sit within the frame */
+    opacity: .3;
+    transform: translateY(0) translateX(0) scale(1);
+  }
+}
+
+/* Parchment shake with variable intensity */
+.parchment { --shakeAmp: 1px; }  /* default */
+.parchment.twitch{
+  animation: parchment-twitch .12s ease;
+}
+@keyframes parchment-twitch{
+  0%   { transform: translate(-50%,-50%) translate(0, 0); }
+  45%  { transform: translate(-50%,-50%) translate(var(--shakeAmp), calc(var(--shakeAmp) * -1)); }
+  100% { transform: translate(-50%,-50%) translate(0, 0); }
+}
+
+/* Reduced motion fallback */
+@media (prefers-reduced-motion: reduce){
+  .binding-scene .ocean::before,
+  .binding-scene .ocean,
+  .bubble { animation: none !important; }
+}
+
+.binding-scene .ocean{ z-index: 0; }
+.binding-scene .eel-silhouette{ z-index: 1; }
+.bubbles{ z-index: 2; }
+.parchment{ z-index: 3; }
+.hook-layer{ z-index: 4; }
+
+/* ==== Rupture / Ink Bloom ==== */
+.ink{
+  position:absolute; inset:0; pointer-events:none; z-index:5;
+  background: radial-gradient(220px 160px at 50% 50%, rgba(0,0,0,0) 0%, rgba(0,0,0,.85) 65%, rgba(0,0,0,1) 100%);
+  opacity:0; transform: scale(0.85);
+}
+.ink.active{
+  animation: ink-bloom 1.4s ease forwards;
+}
+@keyframes ink-bloom{
+  0%   { opacity:0; transform: scale(0.85); }
+  35%  { opacity:.65; transform: scale(1.05); }
+  100% { opacity:1; transform: scale(1.6); }
+}
+
+/* parchment exits */
+.parchment.fadeout{
+  animation: parch-fade 0.9s ease forwards;
+}
+@keyframes parch-fade{
+  to { opacity:0; transform: translate(-50%,-50%) scale(0.98); }
+}
+
+/* eel surge hint */
+.binding-scene .eel-silhouette.surge{
+  animation: eel-heave 1.6s ease-out forwards;
+}
+@keyframes eel-heave{
+  0%   { transform: translate(-50%,-50%) rotate(-12deg) scale(1); opacity:.08; filter: blur(18px) contrast(110%); }
+  35%  { transform: translate(-50%,-50%) rotate(-11.5deg) scale(1.04); opacity:.12; filter: blur(14px) contrast(115%); }
+  100% { transform: translate(-50%,-50%) rotate(-12deg) scale(1.02); opacity:.10; filter: blur(16px) contrast(112%); }
+}
+
+/* ==== Ending text ==== */
+.ending{
+  position:absolute; inset:0; z-index:6; display:flex;
+  align-items:center; justify-content:center; flex-direction:column;
+  opacity:0;
+}
+.ending.show{ animation: ending-fade 0.6s ease forwards 0.6s; }
+@keyframes ending-fade { to { opacity:1; } }
+
+.ending-line{
+  max-width: 42ch; text-align:center;
+  color:#e9dfc7; font-family:"EB Garamond", Garamond, Georgia, serif;
+  font-size:1.3rem; line-height:1.5;
+  text-shadow: 0 2px 14px rgba(0,0,0,.5);
+  min-height: 3.2em;
+}
+
+.ending-actions{ margin-top:16px; }
+.ending-actions button{
+  appearance:none; border:1px solid #bda67b; border-radius:10px;
+  background: linear-gradient(180deg, rgba(248,242,227,.85), rgba(220,210,186,.75));
+  color:#231c15; padding:8px 14px; cursor:pointer;
+}
+.ending-actions button:hover{ filter: brightness(1.04); }
+
+/* layering sanity */
+.binding-scene .ocean{ z-index:0; }
+.binding-scene .eel-silhouette{ z-index:1; }
+.bubbles{ z-index:2; }
+.parchment{ z-index:3; }
+.hook-layer{ z-index:4; }
