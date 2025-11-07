@@ -427,7 +427,8 @@ body.binding .vault{ filter: brightness(.4); pointer-events:none; user-select:no
 }
 
 .binding-scene .ocean{ z-index: 0; }
-.binding-scene .eel-silhouette{ z-index: 1; }
+.binding-scene .eel-silhouette{ z-index: 1;   opacity: var(--eelAlpha, 0.08);     /* start faint */
+  transition: opacity 800ms ease;     /* smooth fade per step */ }
 .bubbles{ z-index: 2; }
 .parchment{ z-index: 3; }
 .hook-layer{ z-index: 4; }

@@ -530,18 +530,14 @@ body.ritual-ge-6.crt:before {
   border: 2px solid rgba(126,241,255,.5);
 }
 
-/* pupil (replace transform line) */
+/* pupil */
 .eye .ball::after{
   content:'';
   position:absolute;
   left:50%; top:50%;
   width: calc(var(--sz,32px) * 0.22);
   height: calc(var(--sz,32px) * 0.22);
-  /* NEW: cursor-follow offsets via CSS vars */
-  transform: translate(
-    calc(-50% + var(--px, 0px)),
-    calc(-50% + var(--py, 0px))
-  );
+  transform: translate(-50%, -50%);
   border-radius: 50%;
   background: radial-gradient(circle, #050a12 0 60%, rgba(57,255,20,.8) 61% 100%);
   box-shadow: 0 0 6px rgba(57,255,20,.6);

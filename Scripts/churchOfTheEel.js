@@ -127,10 +127,10 @@
             { x: "7%", y: "25%" },  // under header / near oculus
             { x: "11%", y: "25%" },  // upper-right aisle edge
             { x: "15%", y: "25%" },  // left of vellum mid
-            { x: "80%", y: "60%" },  // right of vellum mid
-            { x: "85%", y: "60%" },  // lower-left quadrant
-            { x: "90%", y: "60%" },  // center bottom
-            { x: "95%", y: "60%" },   // lower-right quadrant
+            { x: "3%", y: "40%" },  // upper-left aisle edge
+            { x: "7%", y: "40%" },  // under header / near oculus
+            { x: "11%", y: "40%" },  // upper-right aisle edge
+            { x: "15%", y: "40%" },  // left of vellum mid
         ];
 
         let ritualStarted = false;
@@ -511,6 +511,16 @@
                 // fire hook + light parchment candle
                 lightParchCandle(bindIdx);
                 playGroan();
+                // progress-based eel fade (0.06 → 0.22 over 8 lines)
+const eel = document.querySelector(".binding-scene .eel-silhouette");
+if (eel) {
+  const steps = BIND_LINES.length;                 // 8
+  const progress = (bindIdx + 1) / steps;          // after increment
+  const minA = 0.00, maxA = 0.26;                  // tweak to taste
+  const alpha = minA + (maxA - minA) * progress;
+  eel.style.setProperty("--eelAlpha", alpha.toFixed(3));
+}
+
                 // brief pause then move to next line
                 typed = "";
                 bindIdx++;
